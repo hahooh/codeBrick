@@ -47,7 +47,14 @@ func getInventory(w http.ResponseWriter, r *http.Request) {
 }
 
 func updateInventory(w http.ResponseWriter, r *http.Request) {
-
+	params := mux.Vars(r)
+	inventoryId := params["id"]
+	var inventory models.Inventory
+	_ = json.NewDecoder(r.Body).Decode(&inventory)
+	id, _ := strconv.ParseUint(inventoryId, 10, 64)
+	inventory.Id = id
+	updatedInventory := models.UpdateInventory(inventory)
+	jsonResponse(w, r, updatedInventory, 200)
 }
 
 func createInventory(w http.ResponseWriter, r *http.Request) {

@@ -82,6 +82,8 @@ func GetAllInventories() interface{} {
 // GetInventory get an inventory by Id
 func GetInventory(id uint64) interface{} {
 	db := connect()
+	defer db.Close()
+
 	row := db.QueryRow("SELECT * FROM inventory WHERE Id=?", id)
 	inventory, err := getInventoryFromRow(row)
 	if err != nil {
@@ -93,6 +95,8 @@ func GetInventory(id uint64) interface{} {
 // DeleteInventory delete an inventory by Id
 func DeleteInventory(id uint64) interface{} {
 	db := connect()
+	defer db.Close()
+
 	result, error := db.Query("DELETE FROM inventory WHERE id=?", id)
 	result.Close()
 
@@ -104,34 +108,42 @@ func DeleteInventory(id uint64) interface{} {
 	return result
 }
 
-// UpdateInvetory update an inventory exceptions or restrictions can be added but for now you can edit however you want
-func UpdateInvetory(inventoryUpdates Inventory) interface{} {
+// UpdateInventory update an inventory exceptions or restrictions can be added but for now you can edit however you want
+func UpdateInventory(inventoryUpdates Inventory) interface{} {
 	db := connect()
+	defer db.Close()
 
-	id := inventoryUpdates.Id
-	vehicleIdentificationNumber := inventoryUpdates.VehicleIdentificationNumber
-	modelName := inventoryUpdates.ModelName
-	producer := inventoryUpdates.Producer
-	year := inventoryUpdates.Year
-	MSRP := inventoryUpdates.MSRP
-	status := inventoryUpdates.Status
-	booked := inventoryUpdates.Booked
-	listed := inventoryUpdates.Listed
+	fmt.Println("Before UPDATE query")
 
-	result, error := db.Query("UPDATE FROM inventory SET VehicleIdentificationNumber=?, ModelName=?, Producer=?, Year=?, MSRP=?, Status=?, Booked=?, Listed=? WHERE Id=?", vehicleIdentificationNumber, modelName, producer, year, MSRP, status, year, booked, listed, id)
-	result.Close()
+	result, error := db.Query("UPDATE inventory SET VehicleIdentificationNumber=?, ModelName=?, Producer=?, Year=?, MSRP=?, Status=?, Booked=?, Listed=? WHERE Id=?",
+		inventoryUpdates.VehicleIdentificationNumber,
+		inventoryUpdates.ModelName,
+		inventoryUpdates.Producer,
+		inventoryUpdates.Year,
+		inventoryUpdates.MSRP,
+		inventoryUpdates.Status,
+		inventoryUpdates.Booked,
+		inventoryUpdates.Listed,
+		inventoryUpdates.Id)
+
+	fmt.Println("After UPDATE query")
+
+	defer result.Close()
+
+	fmt.Println("after defer", result, error)
 
 	// should do something meaningful then just panic
 	if error != nil {
 		panic(error.Error())
 	}
 
-	return GetInventory(id)
+	return GetInventory(inventoryUpdates.Id)
 }
 
 // CreateInventory create an inventory
 func CreateInventory(inventory Inventory) interface{} {
 	db := connect()
+	defer db.Close()
 
 	_, error := db.Query("INSERT INTO inventory (VehicleIdentificationNumber, ModelName, Producer, Year, MSRP, Status, Booked, Listed) VALUE (?,?,?,?,?,?,?,?)",
 		inventory.VehicleIdentificationNumber,
