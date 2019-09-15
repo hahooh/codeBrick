@@ -21,35 +21,29 @@ type Inventory struct {
 }
 
 func getInventoryFromRows(rows *sql.Rows) Inventory {
-	var Id uint64
-	var VehicleIdentificationNumber string
-	var ModelName string
-	var Producer string
-	var Year uint16
-	var MSRP float32
-	var Status string
-	var Booked bool
-	var Listed bool
-	var CreatedDate string
-	var ModifiedDate string
-	rows.Scan(&Id, &VehicleIdentificationNumber, &ModelName, &Producer, &Year, &MSRP, &Status, &Booked, &Listed, &CreatedDate, &ModifiedDate)
-	return Inventory{Id: Id, VehicleIdentificationNumber: VehicleIdentificationNumber, ModelName: ModelName, Producer: Producer, Year: Year, MSRP: MSRP, Status: Status, Booked: Booked, Listed: Listed, CreatedDate: CreatedDate, ModifiedDate: ModifiedDate}
+	var inventory Inventory
+	rows.Scan(&inventory.Id,
+		&inventory.VehicleIdentificationNumber,
+		&inventory.ModelName, &inventory.Producer,
+		&inventory.Year, &inventory.MSRP,
+		&inventory.Status, &inventory.Booked,
+		&inventory.Listed,
+		&inventory.CreatedDate,
+		&inventory.ModifiedDate)
+	return inventory
 }
 
 func getInventoryFromRow(row *sql.Row) Inventory {
-	var Id uint64
-	var VehicleIdentificationNumber string
-	var ModelName string
-	var Producer string
-	var Year uint16
-	var MSRP float32
-	var Status string
-	var Booked bool
-	var Listed bool
-	var CreatedDate string
-	var ModifiedDate string
-	row.Scan(&Id, &VehicleIdentificationNumber, &ModelName, &Producer, &Year, &MSRP, &Status, &Booked, &Listed, &CreatedDate, &ModifiedDate)
-	return Inventory{Id: Id, VehicleIdentificationNumber: VehicleIdentificationNumber, ModelName: ModelName, Producer: Producer, Year: Year, MSRP: MSRP, Status: Status, Booked: Booked, Listed: Listed, CreatedDate: CreatedDate, ModifiedDate: ModifiedDate}
+	var inventory Inventory
+	row.Scan(&inventory.Id,
+		&inventory.VehicleIdentificationNumber,
+		&inventory.ModelName, &inventory.Producer,
+		&inventory.Year, &inventory.MSRP,
+		&inventory.Status, &inventory.Booked,
+		&inventory.Listed,
+		&inventory.CreatedDate,
+		&inventory.ModifiedDate)
+	return inventory
 }
 
 // GetAllInventories return all inventories
