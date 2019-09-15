@@ -133,7 +133,7 @@ func UpdateInvetory(inventoryUpdates Inventory) interface{} {
 func CreateInventory(inventory Inventory) interface{} {
 	db := connect()
 
-	_, error := db.Query("INSERT INTO inventory VALUES(?,?,?,?,?,?,?,?)",
+	_, error := db.Query("INSERT INTO inventory (VehicleIdentificationNumber, ModelName, Producer, Year, MSRP, Status, Booked, Listed) VALUE (?,?,?,?,?,?,?,?)",
 		inventory.VehicleIdentificationNumber,
 		inventory.ModelName,
 		inventory.Producer,
@@ -148,7 +148,7 @@ func CreateInventory(inventory Inventory) interface{} {
 		panic(error.Error())
 	}
 
-	row := db.QueryRow("SELECT * FROM inventory WHERE id=LAST_INSERT_ID()")
+	row := db.QueryRow("SELECT * FROM inventory ORDER BY Id DESC LIMIT 1")
 	newInventory, _ := getInventoryFromRow(row)
 	return newInventory
 }
