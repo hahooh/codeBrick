@@ -1,0 +1,25 @@
+version: '3'
+services:
+  db:
+    build:
+      context: ./mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: test_db
+      MYSQL_USER: jw
+      MYSQL_PASSWORD: jiwankim
+    container_name: test_database
+    ports:
+      - "4000:3306"
+    tty: true
+  web:
+    build:
+      context: ./go
+    volumes:
+      - "./go:/go"
+    container_name: test_web
+    ports:
+      - "4001:8000"
+    tty: true
+    depends_on:
+      - db
