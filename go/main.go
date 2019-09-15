@@ -7,6 +7,7 @@ import (
 
 	"models"
 
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 )
 
@@ -16,13 +17,21 @@ type errorResponse struct {
 
 func main() {
 	router := mux.NewRouter()
-	router.HandleFunc("/inventory", getInventory).Methods("GET")
-	router.HandleFunc("/inventory", createInventory).Methods("POST")
-	router.HandleFunc("/inventory/{id:[0-9]+}", getInventory).Methods("GET")
-	router.HandleFunc("/inventory/{id:[0-9]+}", updateInventory).Methods("PUT")
-	router.HandleFunc("/inventory/{id:[0-9]+}", deleteInventory).Methods("DELETE")
+	allowedOrigins := handlers.AllowedOrigins([]string{"*"})
+	allowedMethods := handlers.AllowedMethods([]string{http.MethodOptions, http.MethodPost, http.MethodPut, http.MethodGet, http.MethodDelete})
 
-	http.ListenAndServe(":8000", router)
+	router.HandleFunc("*", handleOption).Methods(http.MethodOptions)
+	router.HandleFunc("/inventory", getInventory).Methods(http.MethodGet)
+	router.HandleFunc("/inventory", createInventory).Methods(http.MethodPost)
+	router.HandleFunc("/inventory/{id:[0-9]+}", getInventory).Methods(http.MethodGet)
+	router.HandleFunc("/inventory/{id:[0-9]+}", updateInventory).Methods(http.MethodPut)
+	router.HandleFunc("/inventory/{id:[0-9]+}", deleteInventory).Methods(http.MethodDelete)
+
+	http.ListenAndServe(":8000", handlers.CORS(allowedMethods, allowedOrigins)(router))
+}
+
+func handleOption(w http.ResponseWriter, r *http.Request) {
+	jsonResponse(w, r, nil, 200)
 }
 
 func getInventory(w http.ResponseWriter, r *http.Request) {
