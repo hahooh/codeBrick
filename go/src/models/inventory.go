@@ -113,8 +113,6 @@ func UpdateInventory(inventoryUpdates Inventory) interface{} {
 	db := connect()
 	defer db.Close()
 
-	fmt.Println("Before UPDATE query")
-
 	result, error := db.Query("UPDATE inventory SET VehicleIdentificationNumber=?, ModelName=?, Producer=?, Year=?, MSRP=?, Status=?, Booked=?, Listed=? WHERE Id=?",
 		inventoryUpdates.VehicleIdentificationNumber,
 		inventoryUpdates.ModelName,
@@ -125,12 +123,7 @@ func UpdateInventory(inventoryUpdates Inventory) interface{} {
 		inventoryUpdates.Booked,
 		inventoryUpdates.Listed,
 		inventoryUpdates.Id)
-
-	fmt.Println("After UPDATE query")
-
 	defer result.Close()
-
-	fmt.Println("after defer", result, error)
 
 	// should do something meaningful then just panic
 	if error != nil {
