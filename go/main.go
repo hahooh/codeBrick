@@ -65,6 +65,11 @@ func createInventory(w http.ResponseWriter, r *http.Request) {
 }
 
 func deleteInventory(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	inventoryId := params["id"]
+	id, _ := strconv.ParseUint(inventoryId, 10, 64)
+	models.DeleteInventory(id)
+	jsonResponse(w, r, nil, 200)
 }
 
 func setHeader(w http.ResponseWriter, statusCode int) {
