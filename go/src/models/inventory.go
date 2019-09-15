@@ -12,7 +12,7 @@ type Inventory struct {
 	ModelName                   string
 	Producer                    string
 	Year                        uint16
-	MSRP                        float32
+	MSRP                        float64
 	Status                      string
 	Booked                      bool
 	Listed                      bool
