@@ -20,9 +20,9 @@ type Inventory struct {
 	ModifiedDate                string
 }
 
-func getInventoryFromRows(rows *sql.Rows) Inventory {
+func getInventoryFromRows(rows *sql.Rows) (Inventory, error) {
 	var inventory Inventory
-	rows.Scan(&inventory.Id,
+	err := rows.Scan(&inventory.Id,
 		&inventory.VehicleIdentificationNumber,
 		&inventory.ModelName, &inventory.Producer,
 		&inventory.Year, &inventory.MSRP,
@@ -30,12 +30,17 @@ func getInventoryFromRows(rows *sql.Rows) Inventory {
 		&inventory.Listed,
 		&inventory.CreatedDate,
 		&inventory.ModifiedDate)
-	return inventory
+
+	if err != nil {
+		return inventory, err
+	}
+
+	return inventory, nil
 }
 
-func getInventoryFromRow(row *sql.Row) Inventory {
+func getInventoryFromRow(row *sql.Row) (Inventory, error) {
 	var inventory Inventory
-	row.Scan(&inventory.Id,
+	err := row.Scan(&inventory.Id,
 		&inventory.VehicleIdentificationNumber,
 		&inventory.ModelName, &inventory.Producer,
 		&inventory.Year, &inventory.MSRP,
@@ -43,7 +48,12 @@ func getInventoryFromRow(row *sql.Row) Inventory {
 		&inventory.Listed,
 		&inventory.CreatedDate,
 		&inventory.ModifiedDate)
-	return inventory
+
+	if err != nil {
+		return inventory, err
+	}
+
+	return inventory, nil
 }
 
 // GetAllInventories return all inventories
@@ -54,9 +64,10 @@ func GetAllInventories() interface{} {
 	rows, error := db.Query("SELECT * FROM inventory")
 	defer rows.Close()
 
-	var inventories []Inventory
+	inventories := make([]Inventory, 0)
 	for rows.Next() {
-		inventories = append(inventories, getInventoryFromRows(rows))
+		inventory, _ := getInventoryFromRows(rows)
+		inventories = append(inventories, inventory)
 	}
 
 	// should do something meaningful then just panic
@@ -72,13 +83,18 @@ func GetAllInventories() interface{} {
 func GetInventory(id uint64) interface{} {
 	db := connect()
 	row := db.QueryRow("SELECT * FROM inventory WHERE Id=?", id)
-	return getInventoryFromRow(row)
+	inventory, err := getInventoryFromRow(row)
+	if err != nil {
+		return nil
+	}
+	return inventory
 }
 
 // DeleteInventory delete an inventory by Id
 func DeleteInventory(id uint64) interface{} {
 	db := connect()
 	result, error := db.Query("DELETE FROM inventory WHERE id=?", id)
+	result.Close()
 
 	// should do something meaningful then just panic
 	if error != nil {
@@ -102,7 +118,8 @@ func UpdateInvetory(inventoryUpdates Inventory) interface{} {
 	booked := inventoryUpdates.Booked
 	listed := inventoryUpdates.Listed
 
-	_, error := db.Query("UPDATE FROM inventory SET VehicleIdentificationNumber=?, ModelName=?, Producer=?, Year=?, MSRP=?, Status=?, Booked=?, Listed=? WHERE Id=?", vehicleIdentificationNumber, modelName, producer, year, MSRP, status, year, booked, listed, id)
+	result, error := db.Query("UPDATE FROM inventory SET VehicleIdentificationNumber=?, ModelName=?, Producer=?, Year=?, MSRP=?, Status=?, Booked=?, Listed=? WHERE Id=?", vehicleIdentificationNumber, modelName, producer, year, MSRP, status, year, booked, listed, id)
+	result.Close()
 
 	// should do something meaningful then just panic
 	if error != nil {
@@ -131,6 +148,7 @@ func CreateInventory(inventory Inventory) interface{} {
 		panic(error.Error())
 	}
 
-	newInventory := db.QueryRow("SELECT * FROM inventory WHERE id=LAST_INSERT_ID()")
-	return getInventoryFromRow(newInventory)
+	row := db.QueryRow("SELECT * FROM inventory WHERE id=LAST_INSERT_ID()")
+	newInventory, _ := getInventoryFromRow(row)
+	return newInventory
 }
