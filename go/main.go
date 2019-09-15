@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -53,11 +52,7 @@ func updateInventory(w http.ResponseWriter, r *http.Request) {
 
 func createInventory(w http.ResponseWriter, r *http.Request) {
 	var inventory models.Inventory
-
 	_ = json.NewDecoder(r.Body).Decode(&inventory)
-
-	fmt.Println(inventory)
-
 	newInventoty := models.CreateInventory(inventory)
 	jsonResponse(w, r, newInventoty, 201)
 }
