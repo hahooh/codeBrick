@@ -71,10 +71,10 @@ export default {
                 });
         },
 
-        delete(context, { path, id }) {
+        deleteItem(context, { path, id }) {
             return apiCaller.delete(`${path}/${id}`)
                 .then(response => {
-                    context.commit('addItem', { itemId: id });
+                    context.commit('deleteItem', { itemId: id });
                 })
                 .catch(error => {
                     console.error(error);
