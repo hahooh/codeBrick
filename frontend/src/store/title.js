@@ -4,16 +4,18 @@ export default {
     },
 
     mutations: {
-        setTitle(state, {newTitle}) {
+        setTitle(state, { newTitle }) {
             state.title = newTitle
         }
     },
 
     actions: {
-        
+
     },
 
     getters: {
-       
+        getTitle(state) {
+            return state.title;
+        }
     }
 }

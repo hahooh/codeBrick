@@ -83,6 +83,8 @@ export default {
     },
 
     getters: {
-
+        getItems(state) {
+            return state.items;
+        }
     }
 }

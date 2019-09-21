@@ -44,7 +44,7 @@
 <script>
 import { url } from "./mixins/url";
 import { subtitles } from "./router";
-import { mapState, mapMutations } from "vuex";
+import { mapMutations } from "vuex";
 
 export default {
   name: "App",
@@ -58,7 +58,6 @@ export default {
   },
 
   computed: {
-    ...mapState("title", ["title"])
   },
 
   methods: {

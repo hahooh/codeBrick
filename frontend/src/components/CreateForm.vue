@@ -3,7 +3,7 @@
     <v-dialog v-model="createForm" persistent max-width="600px">
       <v-card>
         <v-card-title>
-          <span class="headline">Create {{title}}</span>
+          <span class="headline">Create {{getTitle}}</span>
         </v-card-title>
         <v-card-text>
           <small>* indicates required field</small>
@@ -53,7 +53,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 import { INPUT_FIELD_CHECKBOX } from "../constants/inputFieldType";
 
 export default {
@@ -69,7 +69,7 @@ export default {
   },
 
   computed: {
-    ...mapState("title", ["title"])
+    ...mapGetters("title", ["getTitle"])
   },
 
   methods: {

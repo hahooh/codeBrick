@@ -1,6 +1,6 @@
 <template>
   <v-card>
-    <v-card-title>{{title}}</v-card-title>
+    <v-card-title>{{getTitle}}</v-card-title>
     <v-container>
       <div v-if="!getItemsError">
         <v-row>
@@ -17,7 +17,7 @@
               v-model="selectedItems"
               :search="searchTerm"
               :headers="headers"
-              :items="getItems('Y', 'N')"
+              :items="formatItems('Y', 'N')"
               item-key="Id"
               :items-per-page="15"
             ></v-data-table>
@@ -42,7 +42,7 @@
 
 <script>
 import CreateForm from "./CreateForm";
-import { mapState, mapActions, mapGetters, mapMutations } from "vuex";
+import { mapActions, mapGetters, mapMutations } from "vuex";
 import { url } from "../mixins/url";
 
 export default {
@@ -63,8 +63,8 @@ export default {
   },
 
   computed: {
-    ...mapState("list", ["items"]),
-    ...mapState("title", ["title"])
+    ...mapGetters("list", ["getItems"]),
+    ...mapGetters("title", ["getTitle"])
   },
 
   methods: {
@@ -88,8 +88,8 @@ export default {
         });
     },
 
-    getItems(trueValue, falseValue) {
-      const newItems = [...this.items];
+    formatItems(trueValue, falseValue) {
+      const newItems = [...this.getItems];
       if (newItems.length === 0) {
         return [];
       }
