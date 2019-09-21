@@ -3,9 +3,10 @@
     <v-dialog v-model="createForm" persistent max-width="600px">
       <v-card>
         <v-card-title>
-          <span class="headline">User Profile</span>
+          <span class="headline">Create {{title}}</span>
         </v-card-title>
         <v-card-text>
+          <small>* indicates required field</small>
           <v-container>
             <v-row v-for="(header, index) in headers" :key="index">
               <v-col cols="12">
@@ -24,7 +25,6 @@
               </v-col>
             </v-row>
           </v-container>
-          <small>*indicates required field</small>
         </v-card-text>
         <v-card-actions>
           <div class="flex-grow-1"></div>
@@ -37,8 +37,20 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
+
 export default {
   props: ["createForm", "headers"],
+
+  data: function() {
+    return {
+      inputField: {}
+    };
+  },
+
+  computed: {
+    ...mapState("title", ["title"])
+  },
 
   methods: {
     saveForm() {},
