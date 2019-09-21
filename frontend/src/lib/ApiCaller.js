@@ -21,12 +21,19 @@ export default class ApiCaller {
         return this.execute('delete', path, params);
     }
 
-    execute(method, path, params) {
-        return axios({
+    execute(method, path, data) {
+        const requestOptions = {
             method,
             url: path,
-            params,
-            baseURL: this.baseUrl
-        })
+            baseURL: this.baseUrl,
+        }
+
+        if(method === 'get') {
+            requestOptions.params = data;
+        } else {
+            requestOptions.data = data;
+        }
+
+        return axios(requestOptions)
     }
 }
