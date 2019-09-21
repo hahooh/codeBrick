@@ -11,8 +11,17 @@ export default {
         saveItems: (state, { items }) => {
             state.items = items
         },
+
         saveItem: (state, { item }) => {
             state.item = item
+        },
+
+        deleteItem: (state, { itemId }) => {
+            state.items = state.items.filter(item => item.Id !== itemId);
+        },
+
+        addItem: (state, { item }) => {
+            state.items.push(item);
         }
     },
 
@@ -40,43 +49,40 @@ export default {
                 });
         },
 
-        updateItem(contenxt, { path, id, updates }) {
+        updateItem(context, { path, id, updates }) {
             return apiCaller.put(`${path}/${id}`, updates)
                 .then(response => {
                     const updatedItem = response.data;
-                    const newItemList = this.items.filter(item => item.Id !== updatedItem.Id);
-                    newItemList.push(updatedItem);
-                    contenxt.saveItems({ items: newItemList });
+                    context.commit('deleteItem', { itemId: updatedItem.Id });
+                    context.commit('addItem', { item: updatedItem });
                 })
                 .catch(error => {
-                    console.log(error);
+                    console.error(error);
                 });
         },
 
         createItem(context, { path, item }) {
             return apiCaller.post(path, item)
                 .then(response => {
-                    const newItemList = this.items.concat([response.data]);
-                    context.saveItems({ items: newItemList });
+                    context.commit('addItem', { item: response.data });
                 })
                 .catch(error => {
-                    console.log(error);
+                    console.error(error);
                 });
         },
 
         delete(context, { path, id }) {
             return apiCaller.delete(`${path}/${id}`)
                 .then(response => {
-                    const newItemList = this.items.filter(item => item.Id != id);
-                    context.saveItems({ items: newItemList })
+                    context.commit('addItem', { itemId: id });
                 })
                 .catch(error => {
-                    console.log(error);
+                    console.error(error);
                 });
         }
     },
 
     getters: {
-        
+
     }
 }

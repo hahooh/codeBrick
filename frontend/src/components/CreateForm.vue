@@ -50,7 +50,7 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState, mapActions } from "vuex";
 import { INPUT_FIELD_CHECKBOX } from "../constants/inputFieldType";
 
 export default {
@@ -69,6 +69,8 @@ export default {
   },
 
   methods: {
+    ...mapActions("list", ["createItem"]),
+
     saveForm() {
       const invalidInput = this.validateInputs();
       if (invalidInput) {
@@ -76,7 +78,15 @@ export default {
         this.inputError = true;
         return;
       }
-      console.log(this.inputFields);
+
+      this.createItem({ path: this.$route.path, item: this.inputFields })
+        .then(response => {
+          console.log(response);
+        })
+        .catch(error => {
+          this.inputError = true;
+          this.inputErrorMessage = "Cannot create. Please contact IT";
+        });
     },
 
     closeForm() {
@@ -98,7 +108,6 @@ export default {
         .find(requiredFieldHeader => {
           const inputRules = requiredFieldHeader.rules;
           let inputValue = this.inputFields[requiredFieldHeader.value];
-          console.log(requiredFieldHeader.type);
           if (
             !inputValue &&
             requiredFieldHeader.type === INPUT_FIELD_CHECKBOX
