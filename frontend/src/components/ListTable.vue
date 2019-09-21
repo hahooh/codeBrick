@@ -17,7 +17,7 @@
               v-model="selectedItems"
               :search="searchTerm"
               :headers="headers"
-              :items="formatItems('Y', 'N')"
+              :items="formatItems('Y','N')"
               item-key="Id"
               :items-per-page="15"
             ></v-data-table>
@@ -89,7 +89,7 @@ export default {
     },
 
     formatItems(trueValue, falseValue) {
-      const newItems = [...this.getItems];
+      const newItems = JSON.parse(JSON.stringify(this.getItems));
       if (newItems.length === 0) {
         return [];
       }
