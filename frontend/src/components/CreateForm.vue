@@ -14,23 +14,24 @@
                   <v-text-field
                     :label="getInputLabel(header.text, header.required)"
                     :rules="header.rules"
-                    @input="input => onInputChange(input, header.value, header.typeCorrection)"
                     :disabled="loading"
+                    v-model="inputFields[header.value]"
+                    @input="input => onInputChange(input, header.value, header.typeCorrection)"
                   ></v-text-field>
                 </div>
                 <div v-if="header.type === 'checkbox'">
                   <v-checkbox
                     :label="getInputLabel(header.text, true)"
-                    @change="input => onInputChange(input, header.value)"
                     :disabled="loading"
+                    v-model="inputFields[header.value]"
                   ></v-checkbox>
                 </div>
                 <div v-if="header.type === 'select'">
                   <v-select
                     :items="header.items"
                     :label="getInputLabel(header.text, true)"
-                    @change="input => onInputChange(input, header.value)"
                     :disabled="loading"
+                    v-model="inputFields[header.value]"
                   ></v-select>
                 </div>
               </v-col>
@@ -75,6 +76,16 @@ export default {
   methods: {
     ...mapActions("list", ["createItem"]),
 
+    mounted() {
+      const defaultObject = {};
+      this.headers
+        .filter(header => header.input)
+        .forEach(header => {
+          defaultObject[header.value] = header.defaultValue;
+        });
+      this.inputFields = Object.assign({}, this.inputFields, defaultObject);
+    },
+
     saveForm() {
       this.startLoading();
       const invalidInput = this.validateInputs();
@@ -98,6 +109,11 @@ export default {
     },
 
     closeForm() {
+      this.headers
+        .filter(header => header.input)
+        .forEach(header => {
+          this.inputFields[header.value] = header.defaultValue;
+        });
       this.$emit("createForm", false);
     },
 
@@ -108,9 +124,8 @@ export default {
     onInputChange(input, inputName, typeCorrection) {
       this.inputError = false;
       if (typeCorrection) {
-        input = typeCorrection(input);
+        this.inputFields[inputName] = typeCorrection(input);
       }
-      this.inputFields[inputName] = input;
     },
 
     startLoading() {

@@ -18,7 +18,8 @@ export const subtitles = [
                     input => minLength(input, 17),
                     input => maxLength(input, 17)
                 ],
-                required: true
+                required: true,
+                defaultValue: '',
             },
             {
                 text: 'Model',
@@ -26,7 +27,8 @@ export const subtitles = [
                 input: true,
                 type: INPUT_FIELD_TEXT,
                 rules: [required],
-                required: true
+                required: true,
+                defaultValue: ''
             },
             {
                 text: 'Make',
@@ -34,7 +36,8 @@ export const subtitles = [
                 input: true,
                 type: INPUT_FIELD_TEXT,
                 rules: [required],
-                required: true
+                required: true,
+                defaultValue: ''
             },
             {
                 text: 'Year',
@@ -44,6 +47,7 @@ export const subtitles = [
                 rules: [required, input => integerRange(input, 1900, 2020)],
                 required: true,
                 typeCorrection: input => parseInt(input),
+                defaultValue: ''
             },
             {
                 text: 'MSRP',
@@ -53,6 +57,7 @@ export const subtitles = [
                 rules: [required, onlyFloat],
                 required: true,
                 typeCorrection: input => parseFloat(input),
+                defaultValue: ''
             },
             {
                 text: 'Status',
@@ -64,21 +69,24 @@ export const subtitles = [
                     'in stock',
                     'sold'
                 ],
-                required: true
+                required: true,
+                defaultValue: ''
             },
             {
                 text: 'Booked',
                 value: 'Booked',
                 input: true,
                 type: INPUT_FIELD_CHECKBOX,
-                required: true
+                required: true,
+                defaultValue: false,
             },
             {
                 text: 'Listed',
                 value: 'Listed',
                 input: true,
                 type: INPUT_FIELD_CHECKBOX,
-                required: true
+                required: true,
+                defaultValue: false,
             },
         ]
     },
