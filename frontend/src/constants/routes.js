@@ -42,7 +42,8 @@ export const subtitles = [
                 input: true,
                 type: INPUT_FIELD_TEXT,
                 rules: [required, input => integerRange(input, 1900, 2020)],
-                required: true
+                required: true,
+                typeCorrection: input => parseInt(input),
             },
             {
                 text: 'MSRP',
@@ -50,7 +51,8 @@ export const subtitles = [
                 input: true,
                 type: INPUT_FIELD_TEXT,
                 rules: [required, onlyFloat],
-                required: true
+                required: true,
+                typeCorrection: input => parseFloat(input),
             },
             {
                 text: 'Status',

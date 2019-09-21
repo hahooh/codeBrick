@@ -14,7 +14,7 @@
                   <v-text-field
                     :label="getInputLabel(header.text, header.required)"
                     :rules="header.rules"
-                    @input="input => onInputChange(input, header.value)"
+                    @input="input => onInputChange(input, header.value, header.typeCorrection)"
                     :disabled="loading"
                   ></v-text-field>
                 </div>
@@ -105,8 +105,11 @@ export default {
       return `${isRequired ? "* " : ""}${inputName}`;
     },
 
-    onInputChange(input, inputName) {
+    onInputChange(input, inputName, typeCorrection) {
       this.inputError = false;
+      if (typeCorrection) {
+        input = typeCorrection(input);
+      }
       this.inputFields[inputName] = input;
     },
 
