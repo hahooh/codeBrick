@@ -15,12 +15,14 @@
                     :label="getInputLabel(header.text, header.required)"
                     :rules="header.rules"
                     @input="input => onInputChange(input, header.value)"
+                    :disabled="loading"
                   ></v-text-field>
                 </div>
                 <div v-if="header.type === 'checkbox'">
                   <v-checkbox
                     :label="getInputLabel(header.text, true)"
                     @change="input => onInputChange(input, header.value)"
+                    :disabled="loading"
                   ></v-checkbox>
                 </div>
                 <div v-if="header.type === 'select'">
@@ -28,6 +30,7 @@
                     :items="header.items"
                     :label="getInputLabel(header.text, true)"
                     @change="input => onInputChange(input, header.value)"
+                    :disabled="loading"
                   ></v-select>
                 </div>
               </v-col>
@@ -60,7 +63,8 @@ export default {
     return {
       inputFields: {},
       inputError: false,
-      inputErrorMessage: ""
+      inputErrorMessage: "",
+      loading: false
     };
   },
 
@@ -72,20 +76,24 @@ export default {
     ...mapActions("list", ["createItem"]),
 
     saveForm() {
+      this.startLoading();
       const invalidInput = this.validateInputs();
       if (invalidInput) {
         this.inputErrorMessage = `Invalid input ${invalidInput.text}`;
         this.inputError = true;
+        this.stopLoading();
         return;
       }
 
       this.createItem({ path: this.$route.path, item: this.inputFields })
         .then(response => {
-          console.log(response);
+          this.closeForm();
+          this.stopLoading();
         })
         .catch(error => {
           this.inputError = true;
           this.inputErrorMessage = "Cannot create. Please contact IT";
+          this.stopLoading();
         });
     },
 
@@ -100,6 +108,14 @@ export default {
     onInputChange(input, inputName) {
       this.inputError = false;
       this.inputFields[inputName] = input;
+    },
+
+    startLoading() {
+      this.loading = true;
+    },
+
+    stopLoading() {
+      this.loading = false;
     },
 
     validateInputs() {
