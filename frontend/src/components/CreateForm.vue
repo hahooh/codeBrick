@@ -7,9 +7,20 @@
         </v-card-title>
         <v-card-text>
           <v-container>
-            <v-row>
+            <v-row v-for="(header, index) in headers" :key="index">
               <v-col cols="12">
-                
+                <div v-if="header.type === 'text'">
+                  <v-text-field
+                    :label="getInputLabel(header.text, header.required)"
+                    :rules="header.rules"
+                  ></v-text-field>
+                </div>
+                <div v-if="header.type === 'checkbox'">
+                  <v-checkbox :label="getInputLabel(header.text, true)"></v-checkbox>
+                </div>
+                <div v-if="header.type === 'select'">
+                  <v-select :items="header.items" :label="getInputLabel(header.text, true)"></v-select>
+                </div>
               </v-col>
             </v-row>
           </v-container>
@@ -31,8 +42,13 @@ export default {
 
   methods: {
     saveForm() {},
+
     closeForm() {
       this.$emit("createForm", false);
+    },
+
+    getInputLabel(inputName, isRequired) {
+      return `${isRequired ? "* " : ""}${inputName}`;
     }
   }
 };

@@ -1,41 +1,41 @@
 <template>
-  <v-card>
-    <v-card-title>{{title}}</v-card-title>
-    <v-container>
-      <div v-if="items.length > 0">
-        <v-row>
-          <v-col cols="12">
-            <v-text-field v-model="searchTerm" label="Search" single-line hide-details></v-text-field>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="12">
-            <v-data-table
-              show-select
-              v-model="selectedItems"
-              :search="searchTerm"
-              :headers="headers"
-              :items="getItems('Y', 'N')"
-              item-key="Id"
-              :items-per-page="100"
-            ></v-data-table>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="12">
-            <v-btn @click="createForm=true" raised small class="buttons">+</v-btn>
-            <v-btn raised small class="buttons">-</v-btn>
-            <v-btn @click="chooseFile()" raised small class="buttons">File Upload</v-btn>
-            <input id="file-input" type="file" hidden />
-          </v-col>
-        </v-row>
-      </div>
-      <div>
-        <v-alert type="error" :value="getItemsError">Fetching data error. Please contact IT.</v-alert>
-      </div>
-      <CreateForm v-on:createForm="toggleFormDialog" :createForm="createForm"></CreateForm>
-    </v-container>
-  </v-card>
+    <v-card>
+      <v-card-title>{{title}}</v-card-title>
+      <v-container>
+        <div v-if="items.length > 0">
+          <v-row>
+            <v-col cols="12">
+              <v-text-field v-model="searchTerm" label="Search" single-line hide-details></v-text-field>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12">
+              <v-data-table
+                show-select
+                v-model="selectedItems"
+                :search="searchTerm"
+                :headers="headers"
+                :items="getItems('Y', 'N')"
+                item-key="Id"
+                :items-per-page="15"
+              ></v-data-table>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12">
+              <v-btn @click="createForm=true" raised small class="buttons">+</v-btn>
+              <v-btn raised small class="buttons">-</v-btn>
+              <v-btn @click="chooseFile()" raised small class="buttons">File Upload</v-btn>
+              <input id="file-input" type="file" hidden />
+            </v-col>
+          </v-row>
+        </div>
+        <div>
+          <v-alert type="error" :value="getItemsError">Fetching data error. Please contact IT.</v-alert>
+        </div>
+        <CreateForm v-on:createForm="toggleFormDialog" :createForm="createForm" :headers="headers"></CreateForm>
+      </v-container>
+    </v-card>
 </template>
 
 <script>
@@ -122,6 +122,10 @@ export default {
 </script>
 
 <style lang="scss">
+#list-table-wrapper {
+  // height: 500px;
+}
+
 .buttons {
   margin-right: 10px;
 }

@@ -1,4 +1,4 @@
-import { subtitles } from '../router'
+import { subtitles } from '../constants/routes'
 
 export const url = {
     data: function () {
