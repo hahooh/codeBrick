@@ -2,7 +2,6 @@ package models
 
 import (
 	"database/sql"
-	"fmt"
 )
 
 // Inventory inventory type
@@ -57,11 +56,11 @@ func getInventoryFromRow(row *sql.Row) (Inventory, error) {
 }
 
 // GetAllInventories return all inventories
-func GetAllInventories() interface{} {
+func GetAllInventories() (interface{}, error) {
 	db := connect()
 	defer db.Close()
 
-	rows, error := db.Query("SELECT * FROM inventory")
+	rows, err := db.Query("SELECT * FROM inventory")
 	defer rows.Close()
 
 	inventories := make([]Inventory, 0)
@@ -70,13 +69,11 @@ func GetAllInventories() interface{} {
 		inventories = append(inventories, inventory)
 	}
 
-	// should do something meaningful then just panic
-	if error != nil {
-		fmt.Println("ERROR!!!")
-		panic(error.Error())
+	if err != nil {
+		return nil, err
 	}
 
-	return inventories
+	return inventories, nil
 }
 
 // GetInventory get an inventory by Id
@@ -93,23 +90,18 @@ func GetInventory(id uint64) interface{} {
 }
 
 // DeleteInventory delete an inventory by Id
-func DeleteInventory(id uint64) interface{} {
+func DeleteInventory(id uint64) error {
 	db := connect()
 	defer db.Close()
 
-	result, error := db.Query("DELETE FROM inventory WHERE id=?", id)
+	result, err := db.Query("DELETE FROM inventory WHERE id=?", id)
 	result.Close()
 
-	// should do something meaningful then just panic
-	if error != nil {
-		panic(error.Error())
-	}
-
-	return result
+	return err
 }
 
 // UpdateInventory update an inventory exceptions or restrictions can be added but for now you can edit however you want
-func UpdateInventory(inventoryUpdates Inventory) interface{} {
+func UpdateInventory(inventoryUpdates Inventory) (interface{}, error) {
 	db := connect()
 	defer db.Close()
 
@@ -127,14 +119,14 @@ func UpdateInventory(inventoryUpdates Inventory) interface{} {
 
 	// should do something meaningful then just panic
 	if error != nil {
-		panic(error.Error())
+		return nil, error
 	}
 
-	return GetInventory(inventoryUpdates.Id)
+	return GetInventory(inventoryUpdates.Id), nil
 }
 
 // CreateInventory create an inventory
-func CreateInventory(inventory Inventory) interface{} {
+func CreateInventory(inventory Inventory) (interface{}, error) {
 	db := connect()
 	defer db.Close()
 
@@ -148,12 +140,11 @@ func CreateInventory(inventory Inventory) interface{} {
 		inventory.Booked,
 		inventory.Listed)
 
-	// should do something meaningful then just panic
 	if error != nil {
-		panic(error.Error())
+		return nil, error
 	}
 
 	row := db.QueryRow("SELECT * FROM inventory ORDER BY Id DESC LIMIT 1")
 	newInventory, _ := getInventoryFromRow(row)
-	return newInventory
+	return newInventory, nil
 }

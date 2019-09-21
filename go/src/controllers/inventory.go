@@ -24,12 +24,24 @@ func getInventory(w http.ResponseWriter, r *http.Request) {
 	inventoryId := params["id"]
 
 	if inventoryId == "" {
-		inventories := models.GetAllInventories()
+		inventories, e := models.GetAllInventories()
+
+		if e != nil {
+			JSONErrorResponse(w, r, 500, e.Error())
+			return
+		}
+
 		JSONResponse(w, r, inventories, 200)
 		return
 	}
 
-	id, _ := strconv.ParseUint(inventoryId, 10, 64)
+	id, e := strconv.ParseUint(inventoryId, 10, 64)
+
+	if e != nil {
+		JSONErrorResponse(w, r, 500, e.Error())
+		return
+	}
+
 	inventory := models.GetInventory(id)
 
 	if inventory == nil {
@@ -45,23 +57,53 @@ func updateInventory(w http.ResponseWriter, r *http.Request) {
 	inventoryId := params["id"]
 	var inventory models.Inventory
 	_ = json.NewDecoder(r.Body).Decode(&inventory)
-	id, _ := strconv.ParseUint(inventoryId, 10, 64)
+	id, e := strconv.ParseUint(inventoryId, 10, 64)
+
+	if e != nil {
+		JSONErrorResponse(w, r, 500, e.Error())
+		return
+	}
+
 	inventory.Id = id
-	updatedInventory := models.UpdateInventory(inventory)
+	updatedInventory, err := models.UpdateInventory(inventory)
+
+	if err != nil {
+		JSONErrorResponse(w, r, 500, err.Error())
+		return
+	}
+
 	JSONResponse(w, r, updatedInventory, 200)
 }
 
 func createInventory(w http.ResponseWriter, r *http.Request) {
 	var inventory models.Inventory
 	_ = json.NewDecoder(r.Body).Decode(&inventory)
-	newInventoty := models.CreateInventory(inventory)
+	newInventoty, err := models.CreateInventory(inventory)
+
+	if err != nil {
+		JSONErrorResponse(w, r, 500, err.Error())
+		return
+	}
+
 	JSONResponse(w, r, newInventoty, 201)
 }
 
 func deleteInventory(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	inventoryId := params["id"]
-	id, _ := strconv.ParseUint(inventoryId, 10, 64)
-	models.DeleteInventory(id)
+	id, err := strconv.ParseUint(inventoryId, 10, 64)
+
+	if err != nil {
+		JSONErrorResponse(w, r, 500, err.Error())
+		return
+	}
+
+	e := models.DeleteInventory(id)
+
+	if e != nil {
+		JSONErrorResponse(w, r, 500, e.Error())
+		return
+	}
+
 	JSONResponse(w, r, nil, 200)
 }
